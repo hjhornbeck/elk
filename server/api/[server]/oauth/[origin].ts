@@ -1,9 +1,18 @@
 import { stringifyQuery } from 'ufo'
 
+function maybeDecodeUri(uri: string): string {
+  try {
+    new URL(uri);
+    return uri;
+  } catch (_e) {
+    return decodeURIComponent(uri);
+  }
+}
+
 export default defineEventHandler(async (event) => {
   let { server, origin } = getRouterParams(event)
   server = server.toLocaleLowerCase().trim()
-  origin = decodeURIComponent(origin)
+  origin = maybeDecodeUri(origin)
   const app = await getApp(origin, server)
 
   if (!app) {
